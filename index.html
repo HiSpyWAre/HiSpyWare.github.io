@@ -1,10 +1,247 @@
 <!-- git command: 1.) Link into the repository first
                   2.) cd (name of repo)
                   3.) git add (name of file inside repo)
-                  4.) git commit -m "(desc)" -->
+                  4.) git commit -m "(desc)" 
+                  5.) git push -->
 
 
 <!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Info Seputar Solo</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* slate-900 */
+        }
+        /* Style for active navigation link */
+        .nav-link.active {
+            color: #38bdf8; /* sky-400 */
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="text-slate-300">
+
+    <!-- Header & Navigation -->
+    <header class="bg-slate-900/80 backdrop-blur-lg sticky top-0 z-50 shadow-lg">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-white tracking-wider">SOLO<span class="text-sky-400">INFO</span></a>
+            <ul class="hidden md:flex space-x-8 text-lg">
+                <li><a href="#warung" class="nav-link hover:text-sky-400 transition-colors duration-300">Kuliner</a></li>
+                <li><a href="#wisata" class="nav-link hover:text-sky-400 transition-colors duration-300">Wisata</a></li>
+                <li><a href="#event" class="nav-link hover:text-sky-400 transition-colors duration-300">Event</a></li>
+            </ul>
+            <!-- Mobile Menu Button (optional, for future enhancement) -->
+            <button class="md:hidden text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-8 md:py-16">
+
+        <!-- Hero Section -->
+        <section class="text-center mb-16">
+            <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-4 leading-tight">
+                WARGA SOLO <span class="text-sky-400">MERAPAT!</span>
+            </h1>
+            <p class="text-lg md:text-xl text-slate-400 max-w-3xl mx-auto">
+                Temukan berita dan rekomendasi terbaik seputar kuliner, wisata, dan event di Kota Solo.
+            </p>
+        </section>
+
+        <div class="lg:grid lg:grid-cols-3 lg:gap-12">
+            
+            <!-- Articles Section -->
+            <div class="lg:col-span-2 space-y-12">
+                
+                <!-- 1. Section Warung / Kuliner -->
+                <section id="warung" class="scroll-mt-24">
+                    <h2 class="text-3xl font-bold text-white border-l-4 border-sky-400 pl-4 mb-8">Rekomendasi Kuliner</h2>
+                    <p class="mb-8 text-slate-400">
+                        Laman ini akan menyediakan info menarik terkait warung makan menarik yang berada di Solo. Ini akan sangat berguna apabila kamu adalah pendatang atau bukan warga asli Solo! Rekomendasi yang diberikan ini tentunya berada dalam lingkup warung makan halal, higienis, dan well-plated.
+                    </p>
+                    <div class="space-y-8">
+                        <!-- Item 1.1 -->
+                        <article class="bg-slate-800 rounded-xl overflow-hidden shadow-2xl hover:shadow-sky-400/20 transition-shadow duration-300">
+                            <img src="https://placehold.co/800x400/1e293b/94a3b8?text=Tengkleng+Bu+Edi" alt="Tengkleng Bu Edi" class="w-full h-56 object-cover">
+                            <div class="p-6">
+                                <h3 class="text-2xl font-bold text-white mb-3">Tengkleng Bu Edi</h3>
+                                <p class="text-slate-400 leading-relaxed">Salah satu kuliner legendaris di Solo, tengkleng Bu Edi menawarkan cita rasa gurih, segar, dan sedikit pedas dari olahan tulang dan jeroan kambing. Terletak di sisi utara gapura Pasar Klewer, bersiaplah untuk mengantri jika ingin mencicipi kelezatannya!</p>
+                            </div>
+                        </article>
+                        <!-- Item 1.2 -->
+                        <article class="bg-slate-800 rounded-xl overflow-hidden shadow-2xl hover:shadow-sky-400/20 transition-shadow duration-300">
+                            <img src="https://placehold.co/800x400/1e293b/94a3b8?text=Wedangan+Pendhopo" alt="Wedangan Pendhopo" class="w-full h-56 object-cover">
+                            <div class="p-6">
+                                <h3 class="text-2xl font-bold text-white mb-3">Wedangan Pendhopo</h3>
+                                <p class="text-slate-400 leading-relaxed">Nikmati suasana malam syahdu di Wedangan Pendhopo. Tak hanya makanannya yang lezat, tata ruangnya yang unik dan klasik dengan hiasan pernak-pernik antik akan membuat Anda betah bersantai sambil menikmati secangkir jahe hangat dan aneka panganan tradisional.</p>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+
+                <!-- 2. Section Wisata -->
+                <section id="wisata" class="scroll-mt-24">
+                    <h2 class="text-3xl font-bold text-white border-l-4 border-sky-400 pl-4 mb-8">Destinasi Wisata</h2>
+                    <p class="mb-8 text-slate-400">
+                        Tentunya laman ini juga akan memberikan rekomendasi tempat wisata menarik di daerah Solo. Wisata ini cocok untuk bagi kamu yang ingin berlibur tanpa mengeluarkan budget yang besar. Terlebih untuk kamu yang bukan warga asli Solo bisa makin cinta deh sama Solo pas mengunjungi beberapa tempat ini!
+                    </p>
+                    <div class="space-y-8">
+                        <!-- Item 2.1 -->
+                        <article class="bg-slate-800 rounded-xl overflow-hidden shadow-2xl hover:shadow-sky-400/20 transition-shadow duration-300">
+                            <img src="https://placehold.co/800x400/1e293b/94a3b8?text=Bendungan+Taman+Tirtonadi" alt="Taman Tirtonadi" class="w-full h-56 object-cover">
+                            <div class="p-6">
+                                <h3 class="text-2xl font-bold text-white mb-3">Bendungan Taman Tirtonadi</h3>
+                                <p class="text-slate-400 leading-relaxed">Wisata gratis yang bersebelahan dengan Terminal Bus Tirtonadi. Bendungan ini memiliki jembatan dengan material kaca yang unik dan atap estetik. Dilengkapi jalur pedestrian dan taman, tempat ini cocok untuk bersantai sore hari.</p>
+                            </div>
+                        </article>
+                        <!-- Item 2.2 -->
+                        <article class="bg-slate-800 rounded-xl overflow-hidden shadow-2xl hover:shadow-sky-400/20 transition-shadow duration-300">
+                            <img src="https://placehold.co/800x400/1e293b/94a3b8?text=Monumen+Pers+Nasional" alt="Monumen Pers Nasional" class="w-full h-56 object-cover">
+                            <div class="p-6">
+                                <h3 class="text-2xl font-bold text-white mb-3">Monumen Pers Nasional</h3>
+                                <p class="text-slate-400 leading-relaxed">Belajar sejarah perkembangan pers di Indonesia secara gratis. Museum ini menyimpan koleksi koran kuno, mesin ketik, kamera, dan memorabilia wartawan nasional. Terdapat juga perpustakaan dan ruang baca digital yang nyaman.</p>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+
+                <!-- 3. Section Event -->
+                <section id="event" class="scroll-mt-24">
+                    <h2 class="text-3xl font-bold text-white border-l-4 border-sky-400 pl-4 mb-8">Event dan Festival</h2>
+                    <p class="mb-8 text-slate-400">
+                         Solo merupakan salah satu kota besar yang sering menjadi lokasi penyelenggaraan event. Mumpung lagi di Solo, jangan sampai kelewatan event-event yang ada ya!
+                    </p>
+                    <div class="space-y-8">
+                        <!-- Item 3.1 -->
+                        <article class="bg-slate-800 rounded-xl overflow-hidden shadow-2xl hover:shadow-sky-400/20 transition-shadow duration-300">
+                            <img src="https://placehold.co/800x400/1e293b/94a3b8?text=Solo+Batik+Carnival" alt="Solo Batik Carnival" class="w-full h-56 object-cover">
+                            <div class="p-6">
+                                <h3 class="text-2xl font-bold text-white mb-3">Solo Batik Carnival</h3>
+                                <p class="text-slate-400 leading-relaxed">Diadakan setiap Juli, Solo Batik Carnival adalah parade penuh warna yang menampilkan desain, tari, dan pertunjukan luar biasa di jalanan Solo. Sebuah perayaan meriah yang merayakan seni dan budaya Indonesia.</p>
+                            </div>
+                        </article>
+                        <!-- Item 3.2 -->
+                        <article class="bg-slate-800 rounded-xl overflow-hidden shadow-2xl hover:shadow-sky-400/20 transition-shadow duration-300">
+                            <img src="https://placehold.co/800x400/1e293b/94a3b8?text=Festival+Lokananta" alt="Festival Lokananta" class="w-full h-56 object-cover">
+                            <div class="p-6">
+                                <h3 class="text-2xl font-bold text-white mb-3">Festival Lokananta</h3>
+                                <p class="text-slate-400 leading-relaxed">Festival musik yang menampilkan seniman lokal dan nasional dari berbagai genre. Menggunakan beberapa panggung di kompleks Lokananta yang bersejarah, festival ini menjadi surga bagi para penikmat musik.</p>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+                
+            </div>
+            
+            <!-- Aside/Sidebar -->
+            <aside class="lg:col-span-1 mt-12 lg:mt-0 lg:sticky top-24 h-fit">
+                <div class="bg-slate-800 p-6 rounded-xl shadow-2xl space-y-8">
+                    <!-- Honorable Mention -->
+                    <div>
+                        <h3 class="text-xl font-bold text-white mb-4">Honorable Mention</h3>
+                        <div class="space-y-4">
+                            <img src="https://placehold.co/600x400/1e293b/94a3b8?text=The+Heritage+Palace" alt="The Heritage Palace" class="rounded-lg w-full h-auto object-cover">
+                            <h4 class="text-lg font-semibold text-sky-400">The Heritage Palace</h4>
+                            <p class="text-slate-400 text-sm">Berlokasi di Kartasura, tempat wisata ini menyajikan bangunan bersejarah, koleksi mobil antik, museum 3D, dan Omah Walik yang unik untuk spot foto instagramable.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Author Info -->
+                    <div>
+                        <h3 class="text-xl font-bold text-white mb-4">Informasi Penulis</h3>
+                        <div class="text-sm">
+                            <div class="flex justify-between py-2 border-b border-slate-700">
+                                <span class="font-semibold text-slate-400">Nama</span>
+                                <span class="text-white">Nayyara Aqila</span>
+                            </div>
+                            <div class="flex justify-between py-2">
+                                <span class="font-semibold text-slate-400">Asal Prodi</span>
+                                <span class="text-white">Informatika</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+        </div>
+
+        <!-- Feedback Form -->
+        <section class="mt-20 bg-slate-800 p-8 rounded-xl shadow-2xl max-w-4xl mx-auto">
+            <h2 class="text-3xl font-bold text-white text-center mb-2">Punya Masukan?</h2>
+            <p class="text-slate-400 text-center mb-8">Kami ingin mendengar feedback dari Anda!</p>
+            <form action="#" method="post" class="space-y-6">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="name" class="block mb-2 text-sm font-medium text-slate-300">Nama</label>
+                        <input type="text" id="name" name="name" class="bg-slate-700 border border-slate-600 text-white text-sm rounded-lg focus:ring-sky-500 focus:border-sky-500 block w-full p-2.5" placeholder="Nama Anda" required>
+                    </div>
+                    <div>
+                        <label for="email" class="block mb-2 text-sm font-medium text-slate-300">Email</label>
+                        <input type="email" id="email" name="email" class="bg-slate-700 border border-slate-600 text-white text-sm rounded-lg focus:ring-sky-500 focus:border-sky-500 block w-full p-2.5" placeholder="email@contoh.com" required>
+                    </div>
+                </div>
+                <div>
+                    <label for="feedback" class="block mb-2 text-sm font-medium text-slate-300">Feedback</label>
+                    <textarea id="feedback" name="feedback" rows="4" class="bg-slate-700 border border-slate-600 text-white text-sm rounded-lg focus:ring-sky-500 focus:border-sky-500 block w-full p-2.5" placeholder="Tulis feedback Anda di sini..." required></textarea>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="text-white bg-sky-600 hover:bg-sky-700 focus:ring-4 focus:ring-sky-500 font-medium rounded-lg text-lg px-8 py-3 transition-colors duration-300">Kirim Feedback</button>
+                </div>
+            </form>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-16 bg-slate-900 border-t border-slate-800">
+        <div class="container mx-auto px-6 py-6 text-center text-slate-400">
+            <p>&copy; 2024 Info Seputar Solo - Learning Labs. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Active Nav on Scroll -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            function changeNav() {
+                let index = sections.length;
+
+                while(--index && window.scrollY + 100 < sections[index].offsetTop) {}
+                
+                navLinks.forEach((link) => link.classList.remove('active'));
+                if (index >= 0 && navLinks[index]) {
+                    navLinks[index].classList.add('active');
+                }
+            }
+
+            changeNav();
+            window.addEventListener('scroll', changeNav);
+        });
+    </script>
+</body>
+</html>
+
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -176,4 +413,4 @@
         <p>Web Artikel tentang informasi daerah Solo &#169; 2024 - Learning Labs</p>
     </footer>
 </body>
-</html>
+</html> -->
