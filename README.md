@@ -1,4 +1,4 @@
-<img width="813" height="195" alt="image" src="https://github.com/user-attachments/assets/783f625d-e253-4a26-a23d-565ddc4960c9" /># **A Front-End Learning Lab Final Project 2024**
+# **A Front-End Learning Lab Final Project 2024**
 (practice to deploy it at github)
 
 ### plan of scale-up the User Interface (UI)
