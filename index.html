@@ -11,41 +11,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Info Seputar Solo</title>
-    
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Custom CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0f172a; /* slate-900 */
+            background: linear-gradient(to bottom, #0f172a, #1e293b);
         }
-        /* Style for active navigation link */
         .nav-link.active {
-            color: #38bdf8; /* sky-400 */
+            color: #38bdf8;
             font-weight: 600;
+        }
+        #map {
+            height: 500px;
+            border-radius: 12px;
+        }
+        .filter-btn.active {
+            background-color: #0284c7;
+            color: white;
+        }
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
         }
     </style>
 </head>
 <body class="text-slate-300">
-
     <!-- Header & Navigation -->
-    <header class="bg-slate-900/80 backdrop-blur-lg sticky top-0 z-50 shadow-lg">
+    <header class="bg-slate-900/95 backdrop-blur-xl sticky top-0 z-50 shadow-2xl border-b border-slate-800">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
             <a href="#" class="text-2xl font-bold text-white tracking-wider">SOLO<span class="text-sky-400">INFO</span></a>
             <ul class="hidden md:flex space-x-8 text-lg">
                 <li><a href="#warung" class="nav-link hover:text-sky-400 transition-colors duration-300">Kuliner</a></li>
                 <li><a href="#wisata" class="nav-link hover:text-sky-400 transition-colors duration-300">Wisata</a></li>
                 <li><a href="#event" class="nav-link hover:text-sky-400 transition-colors duration-300">Event</a></li>
+                <li><a href="#map-section" class="nav-link hover:text-sky-400 transition-colors duration-300">Peta</a></li>
             </ul>
-            <!-- Mobile Menu Button (optional, for future enhancement) -->
-            <button class="md:hidden text-white">
+            <button id="mobileMenuBtn" class="md:hidden text-white">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
                 </svg>
@@ -53,108 +62,197 @@
         </nav>
     </header>
 
-    <!-- Main Content -->
     <main class="container mx-auto px-6 py-8 md:py-16">
-
         <!-- Hero Section -->
         <section class="text-center mb-16">
             <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-4 leading-tight">
                 WARGA SOLO <span class="text-sky-400">MERAPAT!</span>
             </h1>
-            <p class="text-lg md:text-xl text-slate-400 max-w-3xl mx-auto">
+            <p class="text-lg md:text-xl text-slate-400 max-w-3xl mx-auto mb-8">
                 Temukan berita dan rekomendasi terbaik seputar kuliner, wisata, dan event di Kota Solo.
             </p>
+            
+            <!-- Search Bar -->
+            <div class="max-w-2xl mx-auto relative">
+                <svg class="search-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    placeholder="Cari kuliner, wisata, atau event..." 
+                    class="w-full pl-12 pr-4 py-4 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all duration-300"
+                />
+            </div>
+        </section>
+
+        <!-- Filter & Sort Section -->
+        <section class="mb-12">
+            <div class="flex flex-wrap gap-4 justify-center items-center">
+                <span class="text-slate-400 font-semibold">Filter:</span>
+                <button class="filter-btn px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition-all duration-300" data-filter="all">Semua</button>
+                <button class="filter-btn px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition-all duration-300" data-filter="kuliner">Kuliner</button>
+                <button class="filter-btn px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition-all duration-300" data-filter="wisata">Wisata</button>
+                <button class="filter-btn px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition-all duration-300" data-filter="event">Event</button>
+                
+                <span class="text-slate-400 font-semibold ml-4">Sort:</span>
+                <select id="sortSelect" class="px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-sky-500">
+                    <option value="default">Default</option>
+                    <option value="name-asc">Nama (A-Z)</option>
+                    <option value="name-desc">Nama (Z-A)</option>
+                </select>
+            </div>
         </section>
 
         <div class="lg:grid lg:grid-cols-3 lg:gap-12">
-            
-            <!-- Articles Section -->
             <div class="lg:col-span-2 space-y-12">
-                
-                <!-- 1. Section Warung / Kuliner -->
+                <!-- Kuliner Section -->
                 <section id="warung" class="scroll-mt-24">
                     <h2 class="text-3xl font-bold text-white border-l-4 border-sky-400 pl-4 mb-8">Rekomendasi Kuliner</h2>
                     <p class="mb-8 text-slate-400">
                         Laman ini akan menyediakan info menarik terkait warung makan menarik yang berada di Solo. Ini akan sangat berguna apabila kamu adalah pendatang atau bukan warga asli Solo! Rekomendasi yang diberikan ini tentunya berada dalam lingkup warung makan halal, higienis, dan well-plated.
                     </p>
-                    <div class="space-y-8">
-                        <!-- Item 1.1 -->
-                        <article class="bg-slate-800 rounded-xl overflow-hidden shadow-2xl hover:shadow-sky-400/20 transition-shadow duration-300">
+                    <div id="kulinerContainer" class="space-y-8">
+                        <article class="content-card bg-slate-800 rounded-xl overflow-hidden shadow-2xl hover:shadow-sky-400/20 hover:scale-[1.02] transition-all duration-300" data-category="kuliner" data-name="Tengkleng Bu Edi" data-lat="-7.5617" data-lng="110.8255">
                             <img src="pic/11-tengkleng-3.jpg" alt="Tengkleng Bu Edi" class="w-full h-56 object-cover">
                             <div class="p-6">
-                                <h3 class="text-2xl font-bold text-white mb-3">Tengkleng Bu Edi</h3>
-                                <p class="text-slate-400 leading-relaxed">Salah satu kuliner legendaris di Solo, tengkleng Bu Edi menawarkan cita rasa gurih, segar, dan sedikit pedas dari olahan tulang dan jeroan kambing. Terletak di sisi utara gapura Pasar Klewer, bersiaplah untuk mengantri jika ingin mencicipi kelezatannya!</p>
+                                <div class="flex justify-between items-start mb-3">
+                                    <h3 class="text-2xl font-bold text-white">Tengkleng Bu Edi</h3>
+                                    <span class="px-3 py-1 bg-sky-500/20 text-sky-400 rounded-full text-sm">Kuliner</span>
+                                </div>
+                                <p class="text-slate-400 leading-relaxed mb-4">Salah satu kuliner legendaris di Solo, tengkleng Bu Edi menawarkan cita rasa gurih, segar, dan sedikit pedas dari olahan tulang dan jeroan kambing. Terletak di sisi utara gapura Pasar Klewer, bersiaplah untuk mengantri jika ingin mencicipi kelezatannya!</p>
+                                <div class="flex items-center text-sm text-slate-500">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                    Pasar Klewer, Solo
+                                </div>
                             </div>
                         </article>
-                        <!-- Item 1.2 -->
-                        <article class="bg-slate-800 rounded-xl overflow-hidden shadow-2xl hover:shadow-sky-400/20 transition-shadow duration-300">
+
+                        <article class="content-card bg-slate-800 rounded-xl overflow-hidden shadow-2xl hover:shadow-sky-400/20 hover:scale-[1.02] transition-all duration-300" data-category="kuliner" data-name="Wedangan Pendhopo" data-lat="-7.5695" data-lng="110.8142">
                             <img src="pic/pendopo.jpg" alt="Wedangan Pendhopo" class="w-full h-56 object-cover">
                             <div class="p-6">
-                                <h3 class="text-2xl font-bold text-white mb-3">Wedangan Pendhopo</h3>
-                                <p class="text-slate-400 leading-relaxed">Nikmati suasana malam syahdu di Wedangan Pendhopo. Tak hanya makanannya yang lezat, tata ruangnya yang unik dan klasik dengan hiasan pernak-pernik antik akan membuat Anda betah bersantai sambil menikmati secangkir jahe hangat dan aneka panganan tradisional.</p>
+                                <div class="flex justify-between items-start mb-3">
+                                    <h3 class="text-2xl font-bold text-white">Wedangan Pendhopo</h3>
+                                    <span class="px-3 py-1 bg-sky-500/20 text-sky-400 rounded-full text-sm">Kuliner</span>
+                                </div>
+                                <p class="text-slate-400 leading-relaxed mb-4">Nikmati suasana malam syahdu di Wedangan Pendhopo. Tak hanya makanannya yang lezat, tata ruangnya yang unik dan klasik dengan hiasan pernak-pernik antik akan membuat Anda betah bersantai sambil menikmati secangkir jahe hangat dan aneka panganan tradisional.</p>
+                                <div class="flex items-center text-sm text-slate-500">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                    Jl. Srigading I No. 7, Solo
+                                </div>
                             </div>
                         </article>
                     </div>
                 </section>
 
-                <!-- 2. Section Wisata -->
+                <!-- Wisata Section -->
                 <section id="wisata" class="scroll-mt-24">
                     <h2 class="text-3xl font-bold text-white border-l-4 border-sky-400 pl-4 mb-8">Destinasi Wisata</h2>
                     <p class="mb-8 text-slate-400">
                         Tentunya laman ini juga akan memberikan rekomendasi tempat wisata menarik di daerah Solo. Wisata ini cocok untuk bagi kamu yang ingin berlibur tanpa mengeluarkan budget yang besar. Terlebih untuk kamu yang bukan warga asli Solo bisa makin cinta deh sama Solo pas mengunjungi beberapa tempat ini!
                     </p>
-                    <div class="space-y-8">
-                        <!-- Item 2.1 -->
-                        <article class="bg-slate-800 rounded-xl overflow-hidden shadow-2xl hover:shadow-sky-400/20 transition-shadow duration-300">
+                    <div id="wisataContainer" class="space-y-8">
+                        <article class="content-card bg-slate-800 rounded-xl overflow-hidden shadow-2xl hover:shadow-sky-400/20 hover:scale-[1.02] transition-all duration-300" data-category="wisata" data-name="Bendungan Taman Tirtonadi" data-lat="-7.5506" data-lng="110.8398">
                             <img src="pic/tirtonadi.jpg" alt="Taman Tirtonadi" class="w-full h-56 object-cover">
                             <div class="p-6">
-                                <h3 class="text-2xl font-bold text-white mb-3">Bendungan Taman Tirtonadi</h3>
-                                <p class="text-slate-400 leading-relaxed">Wisata gratis yang bersebelahan dengan Terminal Bus Tirtonadi. Bendungan ini memiliki jembatan dengan material kaca yang unik dan atap estetik. Dilengkapi jalur pedestrian dan taman, tempat ini cocok untuk bersantai sore hari.</p>
+                                <div class="flex justify-between items-start mb-3">
+                                    <h3 class="text-2xl font-bold text-white">Bendungan Taman Tirtonadi</h3>
+                                    <span class="px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full text-sm">Wisata</span>
+                                </div>
+                                <p class="text-slate-400 leading-relaxed mb-4">Wisata gratis yang bersebelahan dengan Terminal Bus Tirtonadi. Bendungan ini memiliki jembatan dengan material kaca yang unik dan atap estetik. Dilengkapi jalur pedestrian dan taman, tempat ini cocok untuk bersantai sore hari.</p>
+                                <div class="flex items-center text-sm text-slate-500">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                    Terminal Tirtonadi, Solo
+                                </div>
                             </div>
                         </article>
-                        <!-- Item 2.2 -->
-                        <article class="bg-slate-800 rounded-xl overflow-hidden shadow-2xl hover:shadow-sky-400/20 transition-shadow duration-300">
+
+                        <article class="content-card bg-slate-800 rounded-xl overflow-hidden shadow-2xl hover:shadow-sky-400/20 hover:scale-[1.02] transition-all duration-300" data-category="wisata" data-name="Monumen Pers Nasional" data-lat="-7.5660" data-lng="110.8212">
                             <img src="pic/monumen.jpg" alt="Monumen Pers Nasional" class="w-full h-56 object-cover">
                             <div class="p-6">
-                                <h3 class="text-2xl font-bold text-white mb-3">Monumen Pers Nasional</h3>
-                                <p class="text-slate-400 leading-relaxed">Belajar sejarah perkembangan pers di Indonesia secara gratis. Museum ini menyimpan koleksi koran kuno, mesin ketik, kamera, dan memorabilia wartawan nasional. Terdapat juga perpustakaan dan ruang baca digital yang nyaman.</p>
+                                <div class="flex justify-between items-start mb-3">
+                                    <h3 class="text-2xl font-bold text-white">Monumen Pers Nasional</h3>
+                                    <span class="px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full text-sm">Wisata</span>
+                                </div>
+                                <p class="text-slate-400 leading-relaxed mb-4">Belajar sejarah perkembangan pers di Indonesia secara gratis. Museum ini menyimpan koleksi koran kuno, mesin ketik, kamera, dan memorabilia wartawan nasional. Terdapat juga perpustakaan dan ruang baca digital yang nyaman.</p>
+                                <div class="flex items-center text-sm text-slate-500">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                    Jl. Gajahmada No.59, Solo
+                                </div>
                             </div>
                         </article>
                     </div>
                 </section>
 
-                <!-- 3. Section Event -->
+                <!-- Event Section -->
                 <section id="event" class="scroll-mt-24">
                     <h2 class="text-3xl font-bold text-white border-l-4 border-sky-400 pl-4 mb-8">Event dan Festival</h2>
                     <p class="mb-8 text-slate-400">
-                         Solo merupakan salah satu kota besar yang sering menjadi lokasi penyelenggaraan event. Mumpung lagi di Solo, jangan sampai kelewatan event-event yang ada ya!
+                        Solo merupakan salah satu kota besar yang sering menjadi lokasi penyelenggaraan event. Mumpung lagi di Solo, jangan sampai kelewatan event-event yang ada ya!
                     </p>
-                    <div class="space-y-8">
-                        <!-- Item 3.1 -->
-                        <article class="bg-slate-800 rounded-xl overflow-hidden shadow-2xl hover:shadow-sky-400/20 transition-shadow duration-300">
+                    <div id="eventContainer" class="space-y-8">
+                        <article class="content-card bg-slate-800 rounded-xl overflow-hidden shadow-2xl hover:shadow-sky-400/20 hover:scale-[1.02] transition-all duration-300" data-category="event" data-name="Solo Batik Carnival" data-lat="-7.5650" data-lng="110.8250">
                             <img src="pic/batik.jpg" alt="Solo Batik Carnival" class="w-full h-56 object-cover">
                             <div class="p-6">
-                                <h3 class="text-2xl font-bold text-white mb-3">Solo Batik Carnival</h3>
-                                <p class="text-slate-400 leading-relaxed">Diadakan setiap Juli, Solo Batik Carnival adalah parade penuh warna yang menampilkan desain, tari, dan pertunjukan luar biasa di jalanan Solo. Sebuah perayaan meriah yang merayakan seni dan budaya Indonesia.</p>
+                                <div class="flex justify-between items-start mb-3">
+                                    <h3 class="text-2xl font-bold text-white">Solo Batik Carnival</h3>
+                                    <span class="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm">Event</span>
+                                </div>
+                                <p class="text-slate-400 leading-relaxed mb-4">Diadakan setiap Juli, Solo Batik Carnival adalah parade penuh warna yang menampilkan desain, tari, dan pertunjukan luar biasa di jalanan Solo. Sebuah perayaan meriah yang merayakan seni dan budaya Indonesia.</p>
+                                <div class="flex items-center text-sm text-slate-500">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    Setiap Juli
+                                </div>
                             </div>
                         </article>
-                        <!-- Item 3.2 -->
-                        <article class="bg-slate-800 rounded-xl overflow-hidden shadow-2xl hover:shadow-sky-400/20 transition-shadow duration-300">
+
+                        <article class="content-card bg-slate-800 rounded-xl overflow-hidden shadow-2xl hover:shadow-sky-400/20 hover:scale-[1.02] transition-all duration-300" data-category="event" data-name="Festival Lokananta" data-lat="-7.5700" data-lng="110.8190">
                             <img src="pic/loka.jpg" alt="Festival Lokananta" class="w-full h-56 object-cover">
                             <div class="p-6">
-                                <h3 class="text-2xl font-bold text-white mb-3">Festival Lokananta</h3>
-                                <p class="text-slate-400 leading-relaxed">Festival musik yang menampilkan seniman lokal dan nasional dari berbagai genre. Menggunakan beberapa panggung di kompleks Lokananta yang bersejarah, festival ini menjadi surga bagi para penikmat musik.</p>
+                                <div class="flex justify-between items-start mb-3">
+                                    <h3 class="text-2xl font-bold text-white">Festival Lokananta</h3>
+                                    <span class="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm">Event</span>
+                                </div>
+                                <p class="text-slate-400 leading-relaxed mb-4">Festival musik yang menampilkan seniman lokal dan nasional dari berbagai genre. Menggunakan beberapa panggung di kompleks Lokananta yang bersejarah, festival ini menjadi surga bagi para penikmat musik.</p>
+                                <div class="flex items-center text-sm text-slate-500">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                    Kompleks Lokananta, Solo
+                                </div>
                             </div>
                         </article>
                     </div>
                 </section>
-                
+
+                <!-- Map Section -->
+                <section id="map-section" class="scroll-mt-24">
+                    <h2 class="text-3xl font-bold text-white border-l-4 border-sky-400 pl-4 mb-8">Peta Lokasi Interaktif</h2>
+                    <p class="mb-6 text-slate-400">
+                        Klik marker di peta untuk melihat detail lokasi dan mendapatkan arah ke tempat tujuan.
+                    </p>
+                    <div id="map" class="shadow-2xl"></div>
+                </section>
             </div>
-            
-            <!-- Aside/Sidebar -->
+
+            <!-- Sidebar -->
             <aside class="lg:col-span-1 mt-12 lg:mt-0 lg:sticky top-24 h-fit">
                 <div class="bg-slate-800 p-6 rounded-xl shadow-2xl space-y-8">
-                    <!-- Honorable Mention -->
                     <div>
                         <h3 class="text-xl font-bold text-white mb-4">Honorable Mention</h3>
                         <div class="space-y-4">
@@ -164,7 +262,6 @@
                         </div>
                     </div>
                     
-                    <!-- Author Info -->
                     <div>
                         <h3 class="text-xl font-bold text-white mb-4">Informasi Penulis</h3>
                         <div class="text-sm">
@@ -180,14 +277,13 @@
                     </div>
                 </div>
             </aside>
-
         </div>
 
         <!-- Feedback Form -->
         <section class="mt-20 bg-slate-800 p-8 rounded-xl shadow-2xl max-w-4xl mx-auto">
             <h2 class="text-3xl font-bold text-white text-center mb-2">Punya Masukan?</h2>
             <p class="text-slate-400 text-center mb-8">Kami ingin mendengar feedback dari Anda!</p>
-            <form action="#" method="post" class="space-y-6">
+            <form id="feedbackForm" class="space-y-6">
                 <div class="grid md:grid-cols-2 gap-6">
                     <div>
                         <label for="name" class="block mb-2 text-sm font-medium text-slate-300">Nama</label>
@@ -207,7 +303,6 @@
                 </div>
             </form>
         </section>
-
     </main>
 
     <!-- Footer -->
@@ -217,17 +312,15 @@
         </div>
     </footer>
 
-    <!-- JavaScript for Active Nav on Scroll -->
     <script>
+        // Navigation active state
         document.addEventListener('DOMContentLoaded', function() {
             const sections = document.querySelectorAll('section[id]');
             const navLinks = document.querySelectorAll('.nav-link');
 
             function changeNav() {
                 let index = sections.length;
-
                 while(--index && window.scrollY + 100 < sections[index].offsetTop) {}
-                
                 navLinks.forEach((link) => link.classList.remove('active'));
                 if (index >= 0 && navLinks[index]) {
                     navLinks[index].classList.add('active');
@@ -236,181 +329,168 @@
 
             changeNav();
             window.addEventListener('scroll', changeNav);
+
+            // Search functionality
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', filterContent);
+
+            // Filter buttons
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    filterContent();
+                });
+            });
+
+            // Sort functionality
+            const sortSelect = document.getElementById('sortSelect');
+            sortSelect.addEventListener('change', sortContent);
+
+            function filterContent() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const activeFilter = document.querySelector('.filter-btn.active');
+                const filterValue = activeFilter ? activeFilter.dataset.filter : 'all';
+                const cards = document.querySelectorAll('.content-card');
+
+                cards.forEach(card => {
+                    const category = card.dataset.category;
+                    const name = card.dataset.name.toLowerCase();
+                    const text = card.textContent.toLowerCase();
+
+                    const matchesSearch = name.includes(searchTerm) || text.includes(searchTerm);
+                    const matchesFilter = filterValue === 'all' || category === filterValue;
+
+                    if (matchesSearch && matchesFilter) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+
+            function sortContent() {
+                const sortValue = sortSelect.value;
+                const containers = ['kulinerContainer', 'wisataContainer', 'eventContainer'];
+
+                containers.forEach(containerId => {
+                    const container = document.getElementById(containerId);
+                    const cards = Array.from(container.querySelectorAll('.content-card'));
+
+                    if (sortValue === 'name-asc') {
+                        cards.sort((a, b) => a.dataset.name.localeCompare(b.dataset.name));
+                    } else if (sortValue === 'name-desc') {
+                        cards.sort((a, b) => b.dataset.name.localeCompare(a.dataset.name));
+                    }
+
+                    cards.forEach(card => container.appendChild(card));
+                });
+            }
+
+            // Initialize map
+            const map = L.map('map').setView([-7.5650, 110.8250], 13);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // Add markers for each location
+            const locations = [
+                {
+                    name: 'Tengkleng Bu Edi',
+                    category: 'Kuliner',
+                    lat: -7.5617,
+                    lng: 110.8255,
+                    desc: 'Kuliner legendaris dengan cita rasa tengkleng yang autentik',
+                    color: '#38bdf8'
+                },
+                {
+                    name: 'Wedangan Pendhopo',
+                    category: 'Kuliner',
+                    lat: -7.5695,
+                    lng: 110.8142,
+                    desc: 'Tempat wedangan dengan suasana klasik dan antik',
+                    color: '#38bdf8'
+                },
+                {
+                    name: 'Bendungan Taman Tirtonadi',
+                    category: 'Wisata',
+                    lat: -7.5506,
+                    lng: 110.8398,
+                    desc: 'Wisata gratis dengan jembatan kaca yang unik',
+                    color: '#10b981'
+                },
+                {
+                    name: 'Monumen Pers Nasional',
+                    category: 'Wisata',
+                    lat: -7.5660,
+                    lng: 110.8212,
+                    desc: 'Museum sejarah pers Indonesia dengan koleksi lengkap',
+                    color: '#10b981'
+                },
+                {
+                    name: 'Solo Batik Carnival',
+                    category: 'Event',
+                    lat: -7.5650,
+                    lng: 110.8250,
+                    desc: 'Parade batik spektakuler setiap bulan Juli',
+                    color: '#a855f7'
+                },
+                {
+                    name: 'Festival Lokananta',
+                    category: 'Event',
+                    lat: -7.5700,
+                    lng: 110.8190,
+                    desc: 'Festival musik dengan berbagai genre',
+                    color: '#a855f7'
+                }
+            ];
+
+            locations.forEach(loc => {
+                const marker = L.marker([loc.lat, loc.lng]).addTo(map);
+                
+                const popupContent = `
+                    <div style="font-family: Inter, sans-serif;">
+                        <h3 style="color: ${loc.color}; font-weight: bold; margin-bottom: 8px;">${loc.name}</h3>
+                        <p style="color: #64748b; font-size: 12px; margin-bottom: 4px;">
+                            <strong>Kategori:</strong> ${loc.category}
+                        </p>
+                        <p style="color: #475569; font-size: 13px; margin-bottom: 8px;">${loc.desc}</p>
+                        <a href="https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lng}" 
+                           target="_blank" 
+                           style="display: inline-block; background-color: ${loc.color}; color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 12px; margin-top: 4px;">
+                            Petunjuk Arah
+                        </a>
+                    </div>
+                `;
+                
+                marker.bindPopup(popupContent);
+            });
+
+            // Feedback form submission
+            const feedbackForm = document.getElementById('feedbackForm');
+            feedbackForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const feedback = document.getElementById('feedback').value;
+                
+                // Show success message
+                alert(`Terima kasih ${name}! Feedback Anda telah diterima. Kami akan segera merespons melalui email ${email}.`);
+                
+                // Reset form
+                feedbackForm.reset();
+            });
+
+            // Mobile menu toggle (optional enhancement)
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            mobileMenuBtn.addEventListener('click', function() {
+                // This can be expanded for mobile menu functionality
+                console.log('Mobile menu clicked');
+            });
         });
     </script>
 </body>
 </html>
-
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>infoseputarsolo</title>
-    <link href="style.css" type="text/css" rel="stylesheet">
-</head>
-<body>
-    <header>
-        
-        <div>
-            <h1 class = "header">WARGA SOLO MERAPAT !!!</h1>
-            <p class = "under-header">Berita seputar segala hal yang recommended di Solo </p>
-        </div>
-
-        <nav>
-            <div class="d-flex align-items-start">
-                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                    
-                      <button a href="#Warung">Warung</a></button>
-                     
-                      <button a href="#Wisata">Wisata</a></button>
-
-                      <button a href="#EventDanFest">Prestasi Terbesar</a></button>
-                    
-                      <button class="nav-link" id="pills-disabled-tab" data-bs-toggle="pill" data-bs-target="#pills-disabled" type="button" role="tab" aria-controls="pills-disabled" aria-selected="false" disabled>Disabled</button>
-
-                  </ul>
-                  </div>
-              </div>
-        </nav>
-    </header>
-
-    <main>
-        <div id="content">
-            <!-- artikel 1 -->
-            <!-- <div class="tab-pane fade show active" id="Warung" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0"><h2>Warung</h2></div>
-            <article id="Warung">
-                
-                <!-- TARO IMAGE -->
-               
-                <!-- <p>
-                    Laman ini akan menyediakan info menarik terkait warung makan menarik yang berada di Solo. Ini akan sangat berguna apabila kamu adalah pendatang atau bukan warga asli Solo! Rekomendasi yang diberikan ini tentunya berada dalam lingkup warung makan halal, higienis, dan well-plated.
-                </p>
-                <section>
-                    <h3>① ᴛᴇɴɢᴋʟᴇɴɢ ʙᴜ ᴇᴅɪ  </h3>
-                    <!-- TARO IMAGE -->
-                    <!-- <img src= "pic/11-tengkleng-3.jpg" width="300px" height="150px" >
-                    <p> Apakah Anda bingung memilih menu untuk makan siang? Salah satu kuliner di Solo yang layak dipilih di siang hari adalah tengkleng. Olahan tulang belulang dan jeroan kambing dengan cita rasa gurih, segar, dan sedikit pedas ini sayang untuk dilewatkan. Tepatnya di sisi utara gapura Pasar Klewer, Bu Edi menjajakan dagangannya sejak jam 2 siang. Namun, hanya dalam hitungan jam, tengkleng sudah pasti habis terjual. Nah, bagi kamu yang ingin mampir ke warung ini, sebaiknya siap-siap mengantri sejak jam 1 siang, guys!</p>
-                </section>
-                
-                <section>
-                    <h3>② ᴡᴇᴅᴀɴɢᴀɴ ᴘᴇɴᴅʜᴏᴘᴏ</h3>
-                    <!-- TARO IMAGE -->
-                    <!-- <img src= "pic/pendopo.jpg" width="300px" height="150px" >
-                    <p>
-                        Anda juga bisa meluangkan waktu sebentar untuk bersantai dan menikmati suasana malam di Wedangan Pendhopo. Terletak di Jalan Srigading I No. 7, Turisari, wedangan yang satu ini sudah jadi langganan wisatawan lokal dan asing yang mampir ke Solo. Pasalnya, Wedangan Pendhopo tak hanya terkenal dengan makanannya, tapi juga tata ruangnya yang unik dan klasik. Di setiap sudut Wedangan Pendhopo dihiasi pernak-pernik antik bernilai seni tinggi. Cocok dinikmati sambil bersantai menikmati secangkir jahe panas dan aneka panganan tradisional. Dijamin suka, deh!
-                    </p>
-                </section>
-            </article>
-            
-            <!-- artikel 2 -->
-            <!-- <div class="tab-pane fade" id="Wisata" role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0"><h2>Wisata</h2></div>
-            <article id="Wisata">
-                
-                <!-- TARO IMAGE -->
-                
-                <!-- <p>
-                    Tentunya laman ini juga akan memberikan rekomendasi tempat wisata menarik di daerah Solo. Wisata ini cocok untuk bagi kamu yang ingin berlibur tanpa mengeluarkan budget yang besar. Terlebih untuk kamu yang bukan warga asli Solo bisa makin cinta deh sama Solo pas mengunjungi beberapa tempat ini!
-                </p>
-                <section>
-                    <h3>① ᴛᴀᴍᴀɴ ᴛɪʀᴛᴏɴᴀᴅɪ</h3>
-                    <!-- TARO IMAGE -->
-                    <!-- <img src= "pic/tirtonadi.jpg" width="300px" height="150px" >
-                    <p>Jika ingin menikmati wisata tanpa mengeluarkan biaya sepeser pun, Anda bisa mengunjungi Bendungan Taman Tirtonadi. Lokasinya, bersebelahan dengan Terminal Bus Tirtonadi.  Dikutip dari laman Direktorat Jenderal Kekayaan Negara Kementerian Keuangan, bendungan ini merupakan pertemuan Kali Gajah Putih dan Kali Pepe. Bendungan yang baru diresmikan pada 2019 ini, memiliki bangunan jembatan di atasnya.
-                        Uniknya, material jembatan tersebut sebagian besar menggunakan kaca, baik di lantai maupun pembatas kanan dan kiri. Desain atap jembatan juga dibuat cukup estetik dengan dominanasi warna biru. Bantaran sungai di sekitar bendungan dilengkapi dengan jalur pedestarian dan taman. Bendungan ini juga dilengkapi dengan dermaga sehingga ke depannya dapat menunjang menunjang wisata air. 
-                        </p>
-                </section>
-                
-                <section>
-                    <h3>② ᴍᴏɴᴜᴍᴇɴ ᴘᴇʀꜱ ɴᴀꜱɪᴏɴᴀʟ</h3>
-                    <!-- TARO IMAGE -->
-                    <!-- <img src= "pic/monumen.jpg" width="300px" height="150px" >
-                    <p>
-                        Pengunjung Monumen Pers Nasional dapat melihat sejarah perkembangan pers di Indonesia. Melansir dari laman resminya, pengunjung Monumen Pers Nasional tidak dikenai biaya tiket masuk alias gratis. Tempat wisata edukasi ini buka setiap hari mulai pukul 09.00 - 15.00 WIB, kecuali libur nasional. Lokasinya berada di Jalan Gajahmada No.59, Timuran, Kecamatan Banjarsari. Museum ini menyimpan benda-benda bersejarah yang terkait pers, sepertii koran dan majalah kuno. Adapula koleksi barang terkait pers, seperti mesin ketik, pemancar radio, kamera, hingga memorabilia sejumlah tokoh wartawan nasional.
-                        Selain koleksi, Monumen Pers Nasional juga memiliki perpustakaan dan ruang baca media cetak atau digital. Perpustakaan berada di lantai dua dan memiliki ribuan koleksi buku, dari sastra hingga referensi. Sementara, ruang baca media cetak atau digital berada di bagian belakang museum dan menyediakan layanan baca surat kabar atau majalah dari seluruh Indonesia secara gratis. Di ruang baca ini pula, pengunjung dapat membaca koran atau majalah kuno yang sudah didigitalisasi lewat komputer layar sentuh.
-                    </p>
-                </section>
-            </article>
-            
-            <article  id="Event dan Festival" class="card">
-                <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab" tabindex="0"></div>
-                <h2>Event dan Festival</h2>
-                <p>
-                    Solo merupakan salah satu kota besar yang sering menjadi lokasi penyelenggaraan event. Mumpung lagi di Solo, jangan sampai kelewatan event-event yang ada ya!
-                </p>
-                
-                <section>
-                    <h3>① ꜱᴏʟᴏ ʙᴀᴛɪᴋ ᴄᴀʀɴɪᴠᴀʟ</h3>
-                    <!-- TARO IMAGE -->
-                    <!-- <img src= "pic/batik.jpg" width="300px" height="150px" >
-                    <p>Diadakan pada bulan Juli setiap tahun, Solo Batik Carnival adalah parade penuh warna dengan desain, tari, dan pertunjukan yang luar biasa melalui jalan-jalan di Solo di Jawa Tengah. Solo adalah jantung budaya Jawa, tempat praktik tradisional dilakukan dengan bangga dan dirayakan di panggung modern. Untuk satu hari istimewa di bulan Juli, para pembuat batik terbaik dari jauh dan luas berkumpul untuk mempersembahkan kreasi mereka. Jalan-jalan dipenuhi penduduk setempat dan kota ini mengambil suasana karnaval yang sangat flamboyan sebagai persiapan untuk karnaval. Parade itu sendiri menampilkan ribuan model, masing-masing mengenakan kostum yang lebih rumit dan rumit dari sebelumnya. Dengan musik, tari, dan teater yang semuanya dibungkus dalam kerusuhan warna, Solo Batik Carnival adalah prosesi yang tak terlupakan yang merayakan pertunjukan dan seni Indonesia.
-                    </p>
-                </section>
-                
-                <section>
-                    <h3>② ꜰᴇꜱᴛɪᴠᴀʟ ʟᴏᴋᴀɴᴀɴᴛᴀ</h3>
-                    <!-- TARO IMAGE -->
-                    <!-- <img src= "pic/loka.jpg" width="300px" height="150px" >
-                    <p>
-                        Pengisi acara merupakan seniman lokal dan nasional dengan genre musik yang beragam. Festival Lokananta menggunakan empat panggung, yakni Taman Lingkar Lokananta, Studio Lokananta, Taman Galeri Lokananta, dan ruang konser Lokananta. 
-                    </p>
-                </section>
-            </article>
-        </div>
-        
-        <aside>
-            <article>
-                <header>
-                    <h2> ʜᴏɴᴏʀᴀʙʟᴇ ᴍᴇɴᴛɪᴏɴ ᴅᴇꜱᴛɪɴᴀᴛɪᴏɴ ɪɴ ꜱᴏʟᴏ </h2>
-                    <p>          The Heritage Palace </p>
-                    <figure>
-                        <img src="pic/heritage.jpg" width="300px" height="150px">
-                        <figcaption>Tempat wisata yang satu ini berlokasi di Kartasura, Sukoharjo yang sudah dibuka sejak Juni 2018 lalu. Di sini, Anda akan dapat melihat berbagai bangunan bersejarah, mobil-mobil antik, hingga museum 3D dan wisata Omah Walik.
-
-                        </figcaption>
-                    </figure>
-                </header>
-                
-                <section>
-                    <h3>Informasi Penulis</h3>
-                    <table>
-                        <tr>
-                            <th>
-                                Nama
-                            </th>
-                            <td>
-                                Nayyara Aqila
-                            </td>
-                        </tr>
-                        
-                        <tr>
-                            <th>
-                                Asal Prodi
-                            </th>
-                            <td>
-                                Informatika
-                            </td>
-                        </tr>
-                        
-                    </table>
-                </section>
-            </aside>
-        </article>
-    </main>
-    <br>
-    <p> <h3> Please drop your feedback here !!!</h3></p>
-    <form action="/submit-feedback" method="post">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required><br><br>
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required><br><br>
-        <label for="feedback">Feedback:</label><br>
-        <textarea id="feedback" name="feedback" rows="4" cols="50" required></textarea><br><br>
-        <input type="submit" value="Submit">
-    </form>
-    
-    <footer>
-        <p>Web Artikel tentang informasi daerah Solo &#169; 2024 - Learning Labs</p>
-    </footer>
-</body>
-</html> --> 
