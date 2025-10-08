@@ -29,6 +29,7 @@
 3. Navigasi Mobile yang Fungsional & Elegan
    Tampilan:
    - Saat tombol hamburger di-klik, menu navigasi muncul dari sisi kiri layar (off-canvas menu) dengan animasi geser yang mulus.
+   - Sisa halaman di belakang menu menjadi sedikit lebih gelap (menggunakan overlay) untuk memberikan fokus pada menu yang sedang aktif.
 
 
 
