@@ -13,8 +13,3 @@
    Pengguna bisa mengklik pin (marked as plan when view at map) untuk melihat ringkasan info dan tautan ke halaman detailnya.
 
 **Fase 2: Peningkatan Visual & Alur Pengguna yang Lebih Mendalam**
-abcd
-
-
-
-
