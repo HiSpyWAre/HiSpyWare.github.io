@@ -41,7 +41,7 @@ or all categories
 | Mapping       | **LeafletJS + OpenStreetMap** |
 | Assets        | Static images                 |
 
-## How It Works
+## 🔍 How It Works
 ### 1) Filtering
 Each card has:
 ```
