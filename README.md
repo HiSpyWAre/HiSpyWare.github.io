@@ -1,5 +1,4 @@
 # **A Front-End Learning Lab Final Project 2024**
-(practice to deploy it at github)
 
 ### plan of scale-up the User Interface (UI)
 **Fase 1: Peningkatan Interaktivitas & Penemuan Konten**
